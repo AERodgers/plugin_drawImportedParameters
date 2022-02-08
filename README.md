@@ -10,8 +10,16 @@ Extract the ZIP file and copy the plugin_drawImportedParameters folder to your P
 ----------------
 ## Accessing the plugin
 In order to run the plugin from Praat, simply selects a Sound object along with its associated TextGrid and data Table.
+An option to "Compare Parameters" will appear in the Objects window.
+Click on it to bring up the Menu to compare different parameters across the utterance.
+
+![image](https://user-images.githubusercontent.com/46627448/153032854-f77e1613-5fac-4a0b-bc2e-2a77a92855ea.png)
+
 
 ## User Interface
+
+![image](https://user-images.githubusercontent.com/46627448/153032949-4ea1af4c-5b17-4522-b4c9-d4846312fd85.png)
+
 **TextGrid Information:**
 * **Reference tier**: A single tier from the TextGrid to be used for reference purposes in the image.
   You can use either the tier number or the tier name.
