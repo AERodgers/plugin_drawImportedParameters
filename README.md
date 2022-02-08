@@ -56,3 +56,6 @@ Click on "Compare Parameters" to bring up the Menu for comparing different param
 ## Error handling
 The plug should be able to catch most input menu errors and warn the user.
 If the script crashes unexpected, please get in touch with me.
+
+## Final notes
+I'm not too sure how this plugin will cope with negative values. If you find it does / does not do well with them, do let me know.
