@@ -4,8 +4,10 @@ This script is designed to work best with a single short utterance.
 
 It requires [Praat version 6.x.x](http://www.fon.hum.uva.nl/praat/).
 
-To use the plugin, select the green "Code" icon above, followed by "Download ZIP".
+To install the plugin, select the green "Code" icon above, followed by "Download ZIP".
 Extract the ZIP file and copy the plugin_drawImportedParameters folder to your Praat preferences directory. (See http://www.fon.hum.uva.nl/praat/manual/preferences_directory.html for more information.)
+
+![praat](https://user-images.githubusercontent.com/46627448/153038560-92aff95a-e64a-455d-801c-c32ac553a9f1.png)
 
 ----------------
 ## Accessing the plugin
