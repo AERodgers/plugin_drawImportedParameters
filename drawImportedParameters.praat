@@ -1,4 +1,4 @@
-# Draw Image Parameters from Table
+# Draw Image Parameters from Table 1.0.0
 #    Draw image from a textgrid, sound, and table with time varying parameters.
 #
 # Antoin Eoin Rodgers
@@ -21,10 +21,13 @@ procedure main
         ... }
     # Set up varables
     list_valid_colours = 1
+    convert_samples = 0
     initial_selected_state# = selected#()
     sound = selected("Sound")
     grid =  selected("TextGrid")
     table = selected("Table")
+    selectObject: sound
+    sample_rate = Get sampling frequency
     @readVariables: ""
 
     selectObject: initial_selected_state#
@@ -39,12 +42,22 @@ procedure main
         vuv_cost = voiced___unvoiced_cost
     endif
 
+    # convert samples to time
+    if convert_samples
+        selectObject: table
+        Formula: time_axis$, "self / sample_rate"
+    endif
+
     @drawImportedParameters
 
     # Save variables.
     @writeVariables: ""
 
-    # Return object window to original state and reframe picture window.
+    # Return object window and table to original state and reframe picture window.
+    if convert_samples
+        selectObject: table
+        Formula: time_axis$, "round(self * sample_rate)"
+    endif
     Select outer viewport: 0, image_width, 0, image_height
     selectObject: initial_selected_state#
 endproc
@@ -113,8 +126,9 @@ procedure mainUI
         @check_table
         @check_colours
         @check_textgrid
-
-        if (not okay)
+        if okay
+            @checkTimeVariable
+        else
             selectObject: initial_selected_state#
             beginPause: "Input errors"
             for .i to warnings
@@ -161,7 +175,7 @@ procedure check_textgrid
         selectObject: grid
         num_tiers = Get number of tiers
         reference_tier = number(reference_tier$)
-        if reference_tier > num_tiers
+        if reference_tier > num_tiers or reference_tier < 1
             okay = 0
             plural$ = "s"
             be$ = "are"
@@ -169,10 +183,18 @@ procedure check_textgrid
                 plural$ = "is"
             endif
             warnings += 1
-            warning$[warnings] = "There 'be$' only 'num_tiers' "
+            warning$[warnings] = "There 'be$' 'num_tiers' "
             ... + "tier'plural$' in your textgrid."
             warnings += 1
             warning$[warnings] = "You must use a valid tier number or name."
+        else
+            .is_interval = Is interval tier: reference_tier
+            if not .is_interval
+                okay = 0
+                warnings += 1
+                warning$[warnings] = "You must select an interval tier as your "
+                ... + "reference."
+            endif
         endif
     else
         @findTier: "reference_tier", grid, reference_tier$, 1
@@ -182,8 +204,6 @@ procedure check_textgrid
             warnings += 1
             warning$[warnings] = "No interval tier called "
             ... + """'reference_tier$'"" found."
-            warnings += 1
-            warning$[warnings] = "NB: Reference tier must be an interval tier."
         endif
     endif
 endproc
@@ -229,6 +249,20 @@ procedure check_colours
             endif
         endif
     endfor
+endproc
+
+procedure checkTimeVariable
+    # Auto-detect if time axis is in samples or in seconds.
+    selectObject: table
+    .table_start = Get minimum: time_axis$
+    .table_end = Get maximum: time_axis$
+    .table_dur = .table_end - .table_start
+    selectObject: grid
+    .num_inter = Get number of intervals: reference_tier
+    .grid_start = Get end time of interval: reference_tier, 1
+    .grid_end = Get start time of interval: reference_tier, .num_inter
+    .grid_dur = .grid_end - .grid_start
+    convert_samples = .table_dur > (.grid_dur * 10)
 endproc
 
 procedure advPitchUI

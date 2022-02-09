@@ -1,4 +1,4 @@
-# plugin_drawImportedParameters
+# plugin_drawImportedParameters v.1.0.1
 A Praat plugin draw images using a TextGrid, Sound file, and Table containing parameters imported from another source.
 This script is designed to work best with a single short utterance.
 
@@ -27,7 +27,7 @@ Click on "Compare Parameters" to bring up the Menu for comparing different param
 **Table Column Information**
 |Parameter|Function
 |--|--
-|Time axis|The name of the column in the table contain in the time axis values.
+|Time axis|The name of the column in the table contain in the time axis values. The script will automatically detect if the time is in seconds or by sample frame and adjust appropriately.
 |Y axis parameters|A comma-separated list of columns containing the parameter data to be printed. Note that the scale for the first parameter will be drawn on the left side and the second on the right. Note also that the names of the y-axes will use the column names as labels. If there is only one y-axis parameter, the spectrograph units will be drawn on the right. It is not possible to accommodate more than two scales on the y-axis.
 
 **Pitch Information**
@@ -59,3 +59,6 @@ If the script crashes unexpected, please get in touch with me.
 
 ## Final notes
 I'm not too sure how this plugin will cope with negative values. If you find it does / does not do well with them, do let me know.
+
+## Updates
+1.0.1 the plugin now automatically detects if the time column refers to time in seconds or to the sample rate, and adjusts accordingly.
