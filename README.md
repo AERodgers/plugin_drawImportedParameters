@@ -2,7 +2,7 @@
 A Praat plugin draw images using a TextGrid, Sound file, and Table containing parameters imported from another source.
 This script is designed to work best with a single short utterance.
 
-It requires [Praat version 6.x.x](http://www.fon.hum.uva.nl/praat/).
+It requires [Praat version 6.2.x](http://www.fon.hum.uva.nl/praat/).
 
 To install the plugin, select the green "Code" icon above, followed by "Download ZIP".
 Extract the ZIP file and copy the plugin_drawImportedParameters folder to your Praat preferences directory. (See http://www.fon.hum.uva.nl/praat/manual/preferences_directory.html for more information.)
