@@ -31,7 +31,14 @@ procedure main
     @readVariables: ""
 
     selectObject: initial_selected_state#
-    @mainUI
+
+    okay = 0
+    while not okay
+        okay = 1
+        warnings = 0
+        @mainUI
+        @validateUserInput
+    endwhile
 
     if run_advanced_pitch_settings
         selectObject: initial_selected_state#
@@ -64,11 +71,7 @@ endproc
 
 ### UI Procedures
 procedure mainUI
-    # Runs main UI, processes input, and handles input errors.
-    okay = 0
-    while not okay
-        okay = 1
-        warnings = 0
+    # Runs main UI, processes input.
         selectObject: initial_selected_state#
         beginPause: "DRAW IMAGE PARAMETERS FROM SOUND, TEXTGRID, AND TABLE"
             comment: "TextGrid information"
@@ -100,44 +103,51 @@ procedure mainUI
             exit
         endif
 
-        # Correct F0 errors.
-        if pitch_floor > pitch_ceiling
-            warnings += 1
-            warning$[warnings] = "Pitch floor higher than pitch ceiling: "
-            ... + "Swapping values."
-            f0_temp = pitch_ceiling
-            pitch_ceiling = pitch_floor
-            pitch_floor = f0_temp
-        endif
-
-        if !(draw_spectrogram or draw_boundaries)
-            warnings += 1
-            warning$[warnings] = "I insist on "
-            ... + "drawing boundaries when there is no spectrogram."
-            draw_boundaries = 1
-        endif
-
         # Process variable names.
         y_from_zero = mark_y_axis_from_zero_where_possible
         @csvLine2Array: line_colours$, "colours_n", "colours$"
         @csvLine2Array: y_axis_parameters$, "vs_vars_n", "vs_vars$"
+endproc
 
-        # Validate input
-        @check_table
-        @check_colours
-        @check_textgrid
-        if okay
-            @checkTimeVariable
-        else
-            selectObject: initial_selected_state#
-            beginPause: "Input errors"
-            for .i to warnings
-                comment: warning$[.i]
-            endfor
-            endPause: "Continue", 0,0
-        endif
+procedure validateUserInput
+    # Validate input
+    @checkF0Values
+    @checkBoundaryMarking
+    @check_table
+    @check_colours
+    @check_textgrid
 
-    endwhile
+    if okay
+        @checkTimeVariable
+    else
+        selectObject: initial_selected_state#
+        beginPause: "Input errors"
+        for .i to warnings
+            comment: warning$[.i]
+        endfor
+        endPause: "Continue", 0,0
+    endif
+endproc
+
+procedure checkF0Values
+    # Correct F0 errors.
+    if pitch_floor > pitch_ceiling
+        warnings += 1
+        warning$[warnings] = "Pitch floor higher than pitch ceiling: "
+        ... + "Swapping values."
+        f0_temp = pitch_ceiling
+        pitch_ceiling = pitch_floor
+        pitch_floor = f0_temp
+    endif
+endproc
+
+procedure checkBoundaryMarking
+    if !(draw_spectrogram or draw_boundaries)
+        warnings += 1
+        warning$[warnings] = "I insist on "
+        ... + "drawing boundaries when there is no spectrogram."
+        draw_boundaries = 1
+    endif
 endproc
 
 procedure check_table
@@ -164,7 +174,7 @@ procedure check_table
         if !(.valid_var)
             okay = 0
             warnings += 1
-            warning$[warnings] = "The table doesn't contain a "
+            warning$[warnings] = "Table object 'table' doesn't contain a "
             ... + "column called ""'.cur_var$'"" ."
         endif
     endfor
