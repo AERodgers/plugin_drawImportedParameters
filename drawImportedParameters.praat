@@ -1,4 +1,4 @@
-# Draw Image Parameters from Table 1.0.0
+# Draw Image Parameters from Table 1.0.1.1
 #    Draw image from a textgrid, sound, and table with time varying parameters.
 #
 # Antoin Eoin Rodgers
