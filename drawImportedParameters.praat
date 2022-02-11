@@ -11,14 +11,7 @@
 
 procedure main
     # Praat Image Constants
-    const_rel_grid_hght = 0.19898649123219419587727
-    const_font_to_vert_margin = 25.71429
-    const_font_to_hor_margin = 17.14286
-    praat_colours$# = {
-        ... "Black", "White", "Red", "Green", "Blue", "Yellow", "Cyan",
-        ... "Magenta", "Maroon", "Lime", "Navy", "Teal", "Purple", "Olive",
-        ... "Pink", "Silver"
-        ... }
+    @praatImageConstants
     # Set up varables
     list_valid_colours = 1
     convert_samples = 0
@@ -28,7 +21,7 @@ procedure main
     table = selected("Table")
     selectObject: sound
     sample_rate = Get sampling frequency
-    @readVariables: ""
+    @readVariables: "drawImportedParamters.bin"
 
     selectObject: initial_selected_state#
 
@@ -58,7 +51,7 @@ procedure main
     @drawImportedParameters
 
     # Save variables.
-    @writeVariables: ""
+    @writeVariables: "drawImportedParamters.bin"
 
     # Return object window and table to original state and reframe picture window.
     if convert_samples
@@ -113,9 +106,9 @@ procedure validateUserInput
     # Validate input
     @checkF0Values
     @checkBoundaryMarking
-    @check_table
-    @check_colours
-    @check_textgrid
+    @checkTable
+    @checkColours
+    @checkTextgrid
 
     if okay
         @checkTimeVariable
@@ -150,7 +143,7 @@ procedure checkBoundaryMarking
     endif
 endproc
 
-procedure check_table
+procedure checkTable
     selectObject: table
     .num_cols = Get number of columns
 
@@ -180,7 +173,7 @@ procedure check_table
     endfor
 endproc
 
-procedure check_textgrid
+procedure checkTextgrid
     if number(reference_tier$) != undefined
         selectObject: grid
         num_tiers = Get number of tiers
@@ -218,7 +211,7 @@ procedure check_textgrid
     endif
 endproc
 
-procedure check_colours
+procedure checkColours
     for .i to colours_n
         if number(colours$[.i]) != undefined
             if (number(colours$[.i]) > 1 or  number(colours$[.i]) < 0)
@@ -1049,12 +1042,11 @@ procedure findTier: .outputVar$, .grid, .tier$, .type
 endproc
 
 ### Variable storage and retrieval procedures
-procedure readVariables: .directory$
-    # Initializes variables using names and values in "variables.bin" table.
-        # directory$ = location of "variables.bin".
+procedure readVariables: .file$
+    # Initializes variables using names and values in '.file$' table.
     .cur_selected# = selected#()
 
-    Read from file: .directory$ + "/variables.bin"
+    Read from file: .file$
     .num_rows = Get number of rows
     for .i to .num_rows
         .cur_var$ = Get value: .i, "variable"
@@ -1074,13 +1066,12 @@ procedure readVariables: .directory$
     selectObject: .cur_selected#
 endproc
 
-procedure writeVariables: .directory$
-    # Stores variables using names and values in "variables.bin" table.
-        # directory$ = location of "variables.bin".
-        # Assumes that variables have been initialzed using @readVariables
+procedure writeVariables: .file$
+    # Stores variables using names and values in '.file$' table.
+    #     Assumes that variables have been initialzed using @readVariables.
 
-    if variableExists("readVariables.directory$")
-        Read from file: .directory$ + "/variables.bin"
+    if variableExists("readVariables.file$")
+        Read from file: .file$
         .num_rows = Get number of rows
         for .i to .num_rows
             .cur_var$ = Get value: .i, "variable"
@@ -1091,7 +1082,9 @@ procedure writeVariables: .directory$
                     Set numeric value: .i, "value", '.cur_var$'
                 endif
         endfor
-        Save as binary file: .directory$ + "/variables.bin"
+        Save as binary file: .file$
         Remove
     endif
 endproc
+
+include praatImageConstants.praat

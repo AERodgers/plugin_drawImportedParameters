@@ -1,0 +1,23 @@
+variable	value
+reference_tier$	5
+pitch_floor	60
+pitch_ceiling	250
+draw_boundaries	1
+adjust_time_to_zero	1
+draw_spectrogram	1
+image_height	4
+image_width	6
+base_font_size	10
+time_axis$	pulse time points
+y_axis_parameters$	EE,UP,RD
+y_from_zero	1
+line_colours$	Red,Pink,Green
+title$	Angry - EE,UP, RD
+show_legend	1
+run_advanced_pitch_settings	0
+max__number_of_candidates	15
+silence_threshold	0.03
+voicing_threshold	0.45
+octave_cost	0.01
+octave_jump_cost	0.35
+voiced___unvoiced_cost	0.14
