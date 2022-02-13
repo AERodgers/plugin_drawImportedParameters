@@ -14,14 +14,14 @@ procedure main
     @praatImageConstants
     # Set up varables
     list_valid_colours = 1
-    convert_samples = 0
+    convert_frame_to_s = 0
     initial_selected_state# = selected#()
     sound = selected("Sound")
     grid =  selected("TextGrid")
     table = selected("Table")
     selectObject: sound
     sample_rate = Get sampling frequency
-    @readVariables: "drawImportedParamters.bin"
+    @readVariables: "variables/compareParameters.vars"
 
     selectObject: initial_selected_state#
 
@@ -43,7 +43,7 @@ procedure main
     endif
 
     # convert samples to time
-    if convert_samples
+    if convert_frame_to_s
         selectObject: table
         Formula: time_axis$, "self / sample_rate"
     endif
@@ -51,10 +51,10 @@ procedure main
     @drawImportedParameters
 
     # Save variables.
-    @writeVariables: "drawImportedParamters.bin"
+    @writeVariables: "variables/compareParameters.vars"
 
     # Return object window and table to original state and reframe picture window.
-    if convert_samples
+    if convert_frame_to_s
         selectObject: table
         Formula: time_axis$, "round(self * sample_rate)"
     endif
@@ -265,7 +265,7 @@ procedure checkTimeVariable
     .grid_start = Get end time of interval: reference_tier, 1
     .grid_end = Get start time of interval: reference_tier, .num_inter
     .grid_dur = .grid_end - .grid_start
-    convert_samples = .table_dur > (.grid_dur * 10)
+    convert_frame_to_s = .table_dur > (.grid_dur * 10)
 endproc
 
 procedure advPitchUI
@@ -445,9 +445,9 @@ procedure drawParamLine: .sound, .table,
 endproc
 
 procedure drawBase:  .sound, .refGrid,
-                            ... .minT, .maxT,
-                            ... .paintSpectro, .draw_boundaries, .adjust_time
-                            ... .hght, .wdth, .font_size, .title$
+                 ... .minT, .maxT,
+                 ... .paintSpectro, .draw_boundaries, .adjust_time
+                 ... .hght, .wdth, .font_size, .title$
 
     # Reset draw space
     Erase all

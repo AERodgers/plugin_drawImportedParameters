@@ -1,0 +1,27 @@
+variable	value
+reference_tier$	5
+time_axis$	pulse time points
+y_parameter$	RD
+y_minimum	0
+y_maximum	5
+ref_grid	0
+grid_names$	angry,happy,neutral,sad
+pitch_floor	60
+pitch_ceiling	250
+title$	RD across utterances
+image_height	4
+image_width	6
+base_font_size	10
+adjust_time_to_zero	0
+y_from_zero	0
+draw_spectrogram	1
+draw_boundaries	1
+line_colours$	red, cyan, black, silver
+legend_location	5
+run_advanced_pitch_settings	0
+max__number_of_candidates	15
+silence_threshold	0.03
+voicing_threshold	0.45
+octave_cost	0.01
+octave_jump_cost	0.35
+voiced___unvoiced_cost	0.14
