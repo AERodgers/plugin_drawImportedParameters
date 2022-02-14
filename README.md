@@ -1,4 +1,4 @@
-# plugin_drawImportedParameters v.1.0.1
+# plugin_drawImportedParameters v.1.2.0
 A Praat plugin draw images using a TextGrid, Sound file, and Table containing parameters imported from another source.
 This script is designed to work best with a single short utterance.
 
@@ -7,13 +7,15 @@ It requires [Praat version 6.2.x](http://www.fon.hum.uva.nl/praat/).
 To install the plugin, select the green "Code" icon above, followed by "Download ZIP".
 Extract the ZIP file and copy the plugin_drawImportedParameters folder to your Praat preferences directory. (See http://www.fon.hum.uva.nl/praat/manual/preferences_directory.html for more information.)
 
-![praat](https://user-images.githubusercontent.com/46627448/153038560-92aff95a-e64a-455d-801c-c32ac553a9f1.png)
+![compare parameters](https://user-images.githubusercontent.com/46627448/153866668-df7f11e4-2b70-4a9e-a245-680bb89240f8.png)
+![compare utterances](https://user-images.githubusercontent.com/46627448/153866004-a4277ca5-2587-433f-a4de-b5347b9abff0.png)
 
 ----------------
 ## Accessing the plugin
 In order to run the plugin from Praat, simply select a **Sound object** along with its associated **TextGrid** and data **Table**.
-An option to "Compare Parameters" will appear in the Objects window below a new heading, "Draw imported Parameters".
-Click on "Compare Parameters" to bring up the Menu for comparing different parameters across the utterance.
+An option to "Compare multiple parameters in one utterance... " will appear in the Objects window below a new heading, "Draw imported Parameters".
+Click on "Compare multiple parameters in one utterance... " to bring up the Menu for comparing different parameters across the utterance.
+If you select multiple  **Sound objecta**, **TextGrids** and data **Tables**, you will also have the option to "Compare Utterances by one parameter...".
 
 ![image](https://user-images.githubusercontent.com/46627448/153032854-f77e1613-5fac-4a0b-bc2e-2a77a92855ea.png)
 
@@ -65,9 +67,8 @@ I'm not too sure how this plugin will cope with negative values. If you find it 
 
 
 ----
-# Notes for improving ```@drawUtterance``` (and ```@drawParameters```)
+## Notes for improving ```@drawUtterance``` (and ```@drawParameters```)
 Unfortunately, I haven't had time to write instructions for this or to make the scripts particularly elegant (to say the least). Below is a summary of issues encountered while writing the script, solutions to them, and a to do list.
-
 
 This code is currently very clunky and has been hacked together from the ```@compareParameters``` script. However, it al presented a considerably more complex problem. This is because it needs to perform time normalization, i.e., it needs to warp the timing of all contours to align their interval boundaries with those in the reference utterance.
 Furthermore, both the script hijacks the pitch object and replaces the pitch values in the object with the VS parameters from the VS table. This worked well in ```@compareParameters```, since the unvoiced portions of the single target utterance were not accidentally populated with spurious values or misleading interpolations. However, in ```@compareUtterances```, it does not work so well. The draw function needs to use a pitch object which aligns with the reference utterance. This must be done for all utterances. Unfortunately the voiced and unvoiced (VUV) sections of each target utterance will not neatly align with the VUV of the reference tier.
