@@ -1,5 +1,5 @@
 # Compare Parameters V.1.2.0
-# ------------------------------------------------------
+# --------------------------
 #
 # Vizualization comparing a time-varying parameters within a single utterances
 #
