@@ -1,5 +1,10 @@
-# Draw Image Parameters from Table 1.0.1.1
-#    Draw image from a textgrid, sound, and table with time varying parameters.
+# Compare Parameters V.1.2.0
+# ------------------------------------------------------
+#
+# Vizualization comparing a time-varying parameters within a single utterances
+#
+#     Using a table imported from an external source, the script generates a
+#     visualization to compare different paramters withing the utterance.
 #
 # Antoin Eoin Rodgers
 # Phonetics and Speech Laboratory

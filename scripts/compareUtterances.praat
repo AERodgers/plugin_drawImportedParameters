@@ -1,26 +1,19 @@
+# CompareUtterances V.1.0.1
+# -------------------------
+#
+# Vizualization comparing a time-varying parameter across multiple utterances.
+#
+#    Using a reference tier from a TextGrid, the script warps the timing of all
+#    utterances to match the timing of the reference utterance. It then draws
+#    the target parameter for each utterance using the time warped values.
+#
+# Antoin Eoin Rodgers
+# Phonetics and Speech Laboratory
+# Trinity College Dublin
+# 14.02.2022
+# https://github.com/AERodgers
 
-### FO MAKE VUV SOUND AS SEPARATE PROC: PROB BETTER TO USE VECTOR OF SOUND VALS
-
-load = 0
-if load
-    Read from file: "D:\Users\antoi\OneDrive\Documents\00 Academic\Phonetics and speech\Anna Script\files\Sent5_Angry_Rep1.Collection"
-    Read from file: "D:\Users\antoi\OneDrive\Documents\00 Academic\Phonetics and speech\Anna Script\files\Sent5_Happy_Rep1.Collection"
-    Read from file: "D:\Users\antoi\OneDrive\Documents\00 Academic\Phonetics and speech\Anna Script\files\Sent5_Neutral_Rep1.Collection"
-    Read from file: "D:\Users\antoi\OneDrive\Documents\00 Academic\Phonetics and speech\Anna Script\files\Sent5_Sad_Rep2.Collection"
-    selectObject: "Sound angry_sent5_rep1"
-    plusObject: "TextGrid angry_sent5_rep1"
-    plusObject: "Table Sent5_Angry_Rep1"
-    plusObject: "Sound happy_sent5_rep1"
-    plusObject: "TextGrid happy_sent5_rep1"
-    plusObject: "Table Sent5_Happy_Rep1"
-    plusObject: "Sound neutral_sent5_rep1"
-    plusObject: "TextGrid neutral_sent5_rep1"
-    plusObject: "Table Sent5_Neutral_Rep1"
-    plusObject: "Sound sad_sent5_rep2"
-    plusObject: "TextGrid sad_sent5_rep2"
-    plusObject: "Table Sent5_Sad_Rep2"
-    exit
-endif
+### NB: see markdown for issues regarding this script.
 
 @main
 procedure main
@@ -822,204 +815,14 @@ procedure drawLegend_manual: .xLeft, .xRight, .yBottom, .yTop,
             Draw line:
             ... .x_start + 0.5 * .x_unit, .y_end  - .y_unit * (.i - 0.3),
             ... .x_start + 2 * .x_unit, .y_end  - .y_unit * (.i - 0.3)
-        elsif left$(legend.style$[.i], 1) =
-                ... "R" or left$(legend.style$[.i], 1) = "r"
-            Line width: legend.size[.i]
-            @modifyColVectr: legend.colour$[.i],
-            ... "drawLegend_manual.innerColour$",
-            ... "+ drawLegend_manual.innerChange"
-            @modifyColVectr: legend.colour$[.i],
-            ... "drawLegend_manual.frameColour$",
-            ... "+ drawLegend_manual.frameChange"
-            Colour: .innerColour$
-            Paint rectangle: .innerColour$,
-            ... .x_start + 0.5 * .x_unit,
-            ... .x_start + 2 * .x_unit,
-            ... .y_end  - .y_unit * (.i - 0.3) + .y_unit / 3,
-            ... .y_end  - .y_unit * (.i - 0.3) - .y_unit / 3
-            Line width: legend.size[.i]
-            Colour: .frameColour$
-            Draw rectangle:
-            ... .x_start + 0.5 * .x_unit,
-            ... .x_start + 2 * .x_unit,
-            ... .y_end  - .y_unit * (.i - 0.3) + .y_unit / 3,
-            ... .y_end  - .y_unit * (.i - 0.3) - .y_unit / 3
-        elsif number(legend.style$[.i]) != undefined
-            Line width: legend.size[.i]
-            .lineType = number(left$(legend.style$[.i], 1))
-            .scarcity = number(mid$(legend.style$[.i], 2, 1))
-            .lineWidth = number(right$(legend.style$[.i], 1))
-            if variableExists("bulletSize")
-                .obWidth = pi^0.5 * bulletSize / 1.1
-                .obHeight = pi^0.5 * bulletSize / 4
-            else
-                .obWidth = legend.size[.i] * 2
-                .obHeight = legend.size[.i]
-            endif
-            @drawOblong:
-            ... .x_start + 1.25 * .x_unit, .y_end  - .y_unit * (.i - 0.3),
-            ... .obWidth, .obHeight,
-            ... legend.colour$[.i], .lineType, .scarcity, .lineWidth
-        else
-            .temp = Create Table with column names:
-            ... "table", 1, "X Y Mrk Xs Ys"
-            .xS = Horizontal mm to world coordinates: 0.2
-            .yS = Vertical mm to world coordinates: 0.2
-            Set numeric value: 1, "X", .x_start + 1.25 * .x_unit
-            Set numeric value: 1, "Y", .y_end  - .y_unit * (.i - 0.3)
-            Set numeric value: 1, "Xs", .x_start + 1.25 * .x_unit + .xS
-            Set numeric value: 1, "Ys" , .y_end - .y_unit * (.i - 0.3) - .yS
-            Set string value: 1, "Mrk", legend.style$[.i]
-        Line width: 4
-            Colour: legend.colour$[.i]
-            nowarn Scatter plot (mark):
-            ... "X", .xLeft, .xRight, "Y",
-            ... .yBottom, .yTop, 2,
-            ... "no", "left$(legend.style$[.i], 1)"
-            Remove
         endif
     endfor
-
     # purge legend.items
     legend.items = 0
 endproc
 
-procedure drawOblong: .x, .y, .width, .height,
-    ... .colour$, .lines, .scarcity, .lineWidth
-    # Draws an oblong with a filled colour and optional (black) cross-hatching
-    #
-    # .x, .y     : plot co-ordinates for centre of oblong.
-    # .width     : width of oblong in 10ths of millimetres
-    # .height    : height of oblong in 10ths of millimetres
-    # .colour$   : string name or vector of fill colour
-    # .lines     : type of cross-hatching:
-    #                   0 = none
-    #                   1 = upward-right diagonal lines
-    #                   2 = vertical lines
-    #                   3 = criss-cross diagonal lines
-    #                   4 = downward-right diagonal lines
-    #                   5 = criss-cross horizontal and vertical lines
-    #                   6 = horizontal lines
-    #                   7 = criss-cross diagonal lines with vertical lines
-    #                   8 = criss-cross diagonal, vertical, and horizontal lines
-    # .scarcity  : perpendicular space between each line in 10ths of millimetres
-    # .lineWidth : width of crosshatching lines re Praat "Line width" parameter
-
-    .x10thmm = Horizontal mm to world coordinates: 0.1
-    .y10thmm = Vertical mm to world coordinates: 0.1
-    .width =  .width * .x10thmm
-    .height = .height * .y10thmm
-
-    Paint rectangle: "{0.9,0.9,0.9}",
-    ... .x - (.width + .x10thmm * 2), .x + (.width + .x10thmm * 2),
-    ... .y - (.height + .y10thmm * 2), .y + (.height + .y10thmm * 2)
-    Paint rectangle:
-    ...  "Black",
-    ... .x - .width, .x + .width,
-    ... .y - .height, .y + .height
-    Paint rectangle:
-    ... .colour$,
-    ... .x - (.width - .x10thmm * 5), .x + (.width - .x10thmm * 5),
-    ... .y - (.height - .y10thmm * 5), .y + (.height - .y10thmm * 5)
-
-    # draw inner lines
-    .yLength = (.height - .y10thmm * 5)
-    .xLength = Vertical world coordinates to mm: .yLength
-    .xLength = Horizontal mm to world coordinates: .xLength
-    .xLength = abs(.xLength * 2)
-    .yLength = abs(.yLength * 2)
-    .xMin = .x - (.width - .x10thmm * 5)
-    .xMax = .x + (.width - .x10thmm * 5)
-    .yMin = .y - (.height - .y10thmm * 5)
-    .yMax = .y + (.height - .y10thmm * 5)
-
-    Line width: .lineWidth
-    Colour: '.colour$' * 0.0
-
-    # DOWN-LEFTWARD DIAGONAL LINES
-    if .lines = 1 or .lines = 3 or .lines = 7 or .lines = 8
-        .xStart = .xMin
-        .yStart = .yMax
-        .xEnd = .xStart - .xLength
-        while .yStart > .yMin and .xEnd < .xMax
-            .yStart = .yMax
-            .yEnd = .yMin
-            if .xEnd <= .xMin
-                .xEnd = .xMin
-                .yStart = .yMax
-                .yEnd = .yMax + .yLength * (.xEnd - .xStart) / .xLength
-            endif
-            if .xStart >= .xMax
-                .xStart = .xMax
-                .yStart = .yMin - .yLength * (.xEnd - .xStart) / .xLength
-                .yEnd = .yMin
-            endif
-            Draw line:
-            ... .xStart, .yStart,
-            ... .xEnd, .yEnd
-            if .xStart < .xMax
-                .xStart += .x10thmm * .scarcity * 2^0.5
-                .xEnd = .xStart - .xLength
-            else
-                .xEnd += .x10thmm * .scarcity * 2^0.5
-                .xStart = .xStart + .xLength
-            endif
-        endwhile
-    endif
-
-    # DOWN-RIGHTWARD DIAGONAL LINES
-    if .lines = 3 or .lines = 4 or .lines = 7 or .lines = 8
-        .xStart = .xMax
-        .yStart = .yMax
-        .xEnd = .xStart + .xLength
-        while .yStart > .yMin and .xEnd > .xMin
-            .yStart = .yMax
-            .yEnd = .yMin
-            if .xEnd >= .xMax
-                .xEnd = .xMax
-                .yStart = .yMax
-                .yEnd = .yMax - .yLength * (.xEnd - .xStart) / .xLength
-            endif
-            if .xStart <= .xMin
-                .xStart = .xMin
-                .yStart = .yMin + .yLength * (.xEnd - .xStart) / .xLength
-                .yEnd = .yMin
-            endif
-            Draw line:
-            ... .xStart, .yStart,
-            ... .xEnd, .yEnd
-            if .xStart > .xMin
-                .xStart -= .x10thmm * .scarcity * 2^0.5
-                .xEnd = .xStart + .xLength
-            else
-                .xEnd -= .x10thmm * .scarcity * 2^0.5
-                .xStart = .xEnd - .xLength
-            endif
-        endwhile
-    endif
-
-    # VERTICAL LINES
-    if .lines = 2 or .lines = 5 or .lines = 7 or .lines = 8
-        .curX = .xMin
-        while .curX < .xMax
-            Draw line: .curX, .yMax, .curX, .yMin
-            .curX += .x10thmm * .scarcity
-        endwhile
-    endif
-
-    # HORIZONTAL LINES
-    if .lines = 5 or .lines = 6 or .lines = 8
-        .curY = .yMin
-        while .curY <= .yMax
-            Draw line: .xMin, .curY, .xMax, .curY
-            .curY += .y10thmm * .scarcity
-        endwhile
-    endif
-endproc
-
-### Time normalization and standardization procedures
+### Time warping, normalization, standardization procedures.
 procedure warpTimes: .textGrids#, .tables#, .ref_tier, .t_col$, .ref_grid_obj
-
     # Get target tier interval durations and grand mean
     @GetTargetTimes: .textGrids#, .ref_tier, "warpTimes"
     # adjust reference interval times if NOT mean values.

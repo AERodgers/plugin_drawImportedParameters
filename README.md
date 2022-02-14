@@ -62,3 +62,32 @@ I'm not too sure how this plugin will cope with negative values. If you find it 
 
 ## Updates
 1.0.1 the plugin now automatically detects if the time column refers to time in seconds or to the sample rate, and adjusts accordingly.
+
+
+----
+# Notes for improving ```@drawUtterance``` (and ```@drawParameters```)
+Unfortunately, I haven't had time to write instructions for this or to make the scripts particularly elegant (to say the least). Below is a summary of issues encountered while writing the script, solutions to them, and a to do list.
+
+
+This code is currently very clunky and has been hacked together from the ```@compareParameters``` script. However, it al presented a considerably more complex problem. This is because it needs to perform time normalization, i.e., it needs to warp the timing of all contours to align their interval boundaries with those in the reference utterance.
+Furthermore, both the script hijacks the pitch object and replaces the pitch values in the object with the VS parameters from the VS table. This worked well in ```@compareParameters```, since the unvoiced portions of the single target utterance were not accidentally populated with spurious values or misleading interpolations. However, in ```@compareUtterances```, it does not work so well. The draw function needs to use a pitch object which aligns with the reference utterance. This must be done for all utterances. Unfortunately the voiced and unvoiced (VUV) sections of each target utterance will not neatly align with the VUV of the reference tier.
+The solution for this was to:
+
+1. Generate an all voiced dummy pitch object from the reference utterance, any portion of which could be unvoiced.
+2. Generate a 2D VUV matrix from each target utterance, where each row represented a Voiced or Unvoiced section of the utterance (col_1 = tmin, col_2 = tmax, col_3 = voicing flag).
+3. Normalize the VUV matrix to the reference tier of the same utterance so that the pre-decimal component equals the interval number, and the decimal component equals the timing of the onset and offset of the VUV section as a proportion of the interval.
+4. Warp the normalized values of the VUV matrix to the reference utterance interval times.
+5. De-voice the portions of the dummy pitch object based on the time-normalized and warped VUV matrix.
+
+This solution meant that only portions of the original utterance which were voiced would be reflected in the figure (rather than the output misleadingly reflecting the voiced and unvoiced sections of the reference utterance only).
+A second issue occurred with the ```@drawLegend``` functions. The function _should_ place the legend key in the least populated area of the image space; however, this appears to be broken. Therefore, I added a function called ```@drawLegend_manual``` and updated the UI so that the user manually selects the location of the legend. NOTE also that the script only uses a small number of the original options for the ```@drawLegend``` set of procedures, so these have been removed from the current script.
+
+## TO DO
+Currently there is a lot of redundancy in both main scripts, since they use the same procedures. Rather than using Praat's  built-in ```include``` command, they are simply added to the bottom of the main script. This is largely because it makes finding line numbers easier during debugging. Also, in order to save time, some of the new scripts created for ```@compareParameters``` took a few shortcuts, most noticeably in using global rather than local variables, this mitigating the need for arguments for several procedures. This made them less generalizable. Therefore, as a rather clunk time-saving device, these were simply modified for purpose in ```@compareUtterances```. It will take time to untangle this mess and to generate more efficient generalized alternatives. So...
+
+1. Update the GitHub markdown to ```include``` the instructions for drawUtterance
+2. Fix the auto-placement algorithm in the drawLegend procedures. (Remember, the user should only really need to use the ```@legend``` procedure to populate the legend database and the ```@drawLegend``` procedure to draw with legend, including only a _minimal_ number ofdraw parameters.)
+3. Allow the script to work with both auto-placement and manual
+placement of the legend.
+4. Rationalize duplicated scripts by placing them in a separate script file and utilizing the ```include``` command.
+5. Where reasonable, generalize scripts which are shared across the two main procedures and if possible make them generalizable even beyond.
