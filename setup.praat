@@ -1,3 +1,5 @@
+# plugin_drawImportedParameters v.1.2.1
+
 Add action command:
 ... "Sound", 0,
 ... "TextGrid", 0,

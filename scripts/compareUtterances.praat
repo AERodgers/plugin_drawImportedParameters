@@ -1,5 +1,5 @@
-# CompareUtterances V.1.0.1
-# -------------------------
+# CompareUtterances
+# -----------------
 #
 # Vizualization comparing a time-varying parameter across multiple utterances.
 #
@@ -161,10 +161,13 @@ procedure mainUI
         y_from_zero = 0
         vs_vars$[1] = y_parameter$
         vs_vars_n = 1
+        grid_names$  = utterance_names_for_image$
+
         @csvLine2Array: utterance_names_for_image$,
         ... "grid_names_n",
         ... "grid_names$"
         @csvLine2Array: line_colours$, "colours_n", "colours$"
+
 endproc
 
 procedure advPitchUI
@@ -536,6 +539,7 @@ procedure drawUtteranceLine: .tgt_sound, .tgt_grid, .tgt_table,
         .cur_x_val = Get value: .i, .x_axis$
         .cur_y_val = Get value: .i, .y_axis$
         selectObject: .dummy_pitch_tier
+
         if .cur_y_val != undefined
             Add point: .cur_x_val, .cur_y_val
         endif
@@ -832,9 +836,11 @@ procedure warpTimes: .textGrids#, .tables#, .ref_tier, .t_col$, .ref_grid_obj
             .ref_tmax#[.interval] = .tmax##[.ref_grid_obj, .interval]
         endfor
     endif
+
     @warpTime2Ref: .tables#, .t_col$,
                           ... .tmin##, .tmax##,
                           ... .ref_tmin#, .ref_tmax#, "t_standard"
+
 endproc
 
 procedure GetTargetTimes: .initial_selected_state#, .reference_tier,
@@ -866,8 +872,8 @@ procedure GetTargetTimes: .initial_selected_state#, .reference_tier,
 
     if not .tierContentParity
         removeObject: .reference_tierTables#
-        exitScript: "Your target TextGrid tier do not contain identical content."
-        ... + newline$,  "The target utterances cannot be time normalised."
+        exitScript: "Your target TextGrid tier does not contain identical "
+        ...  "content.'newline$'The target utterances cannot be time processed."
     endif
 
     #Create Vector of tier times
@@ -917,14 +923,29 @@ procedure warpTime2Ref: .tables#, .t_col$,
             ... +   "self[.t_col$] >= .tmin##[.i,.j] "
             ... +   "and self[.t_col$] <= .tmax##[.i,.j] "
             ... + "then "
-            ... +        "(self[.t_col$] - .tmin##[.i,.j]) "
-            ... +        "/ (.tmax##[.i,.j] - .tmin##[.i,.j]) "
+            ... +        "("
+            ... +            "(self[.t_col$] - .tmin##[.i,.j]) "
+            ... +            "/ (.tmax##[.i,.j] - .tmin##[.i,.j])"
+            ... +        ") "
             ... +        "* (.ref_tmax#[.j] - .ref_tmin#[.j]) "
             ... +        " + .ref_tmin#[.j]"
             ... + "else self "
             ... + "endif "
+
+            # check for and correct undefined times in standardized time column.
+            .undefined# = List row numbers where: "self [row, .t_col$] = undefined"
+            for .k to size(.undefined#)
+                .cur_t = Get value: .undefined#[.k], .t_col$
+                Set numeric value: .undefined#[.k], .std_col$,
+                ... (.cur_t - .tmin##[.i,.j])
+                ... / (.tmax##[.i,.j] - .tmin##[.i,.j])
+                ... * (.ref_tmax#[.j] - .ref_tmin#[.j])
+                ...  + .ref_tmin#[.j]
+            endfor
+
         endfor
     endfor
+
 endproc
 
 procedure findTier: .outputVar$, .grid, .tier$, .type
@@ -992,7 +1013,8 @@ procedure normVUV2Tgt: .vuv##, .tgt_grid, .ref_tier
 
     .tier_min = .tier##[1,1]
     .tier_max = .tier##[.tier_rows, 2]
-    # constrain VUV values to within the range of .tier##
+
+    # vvv Constrain VUV values to within the range of .tier##
     for .i to .vuv_rows
         if .vuv##[.i, 1] < .tier_min
             .vuv##[.i, 1] = .tier_min
@@ -1006,14 +1028,15 @@ procedure normVUV2Tgt: .vuv##, .tgt_grid, .ref_tier
             .vuv##[.i, 2] = .tier_max
         endif
     endfor
-
-
+    # ^^^
 
     for .cur_VUV to numberOfRows(.vuv##)
+        # Get start and end of current VUV interval
         .cur_VUV_min = .vuv##[.cur_VUV, .min]
         .cur_VUV_max = .vuv##[.cur_VUV, .max]
 
-        for .cur_int to numberOfRows(.tier##)
+        # Identify which interval .cur_VUV_min and .cur_VUV_max belong to
+        for .cur_int to .tier_rows
             .cur_int_min = .tier##[.cur_int, .min]
             .cur_int_max = .tier##[.cur_int, .max]
 
@@ -1021,8 +1044,10 @@ procedure normVUV2Tgt: .vuv##, .tgt_grid, .ref_tier
                 .vuv##[.cur_VUV, .min] = (.cur_VUV_min - .cur_int_min)
                                     ... / (.cur_int_max - .cur_int_min)
                                     ... + .cur_int
+                if .vuv##[.cur_VUV, .min] > .tier_rows
+                    .vuv##[.cur_VUV, .min] = .tier_rows + 0.999
+                endif
             endif
-
 
             if (.cur_VUV_max >= .cur_int_min and .cur_VUV_max <= .cur_int_max)
                 .vuv##[.cur_VUV, .max] = (.cur_VUV_max - .cur_int_min)

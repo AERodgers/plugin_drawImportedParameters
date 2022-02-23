@@ -15,7 +15,7 @@ Extract the ZIP file and copy the plugin_drawImportedParameters folder to your P
 In order to run the plugin from Praat, simply select a **Sound object** along with its associated **TextGrid** and data **Table**.
 An option to "Compare multiple parameters in one utterance... " will appear in the Objects window below a new heading, "Draw imported Parameters".
 Click on "Compare multiple parameters in one utterance... " to bring up the Menu for comparing different parameters across the utterance.
-If you select multiple  **Sound objecta**, **TextGrids** and data **Tables**, you will also have the option to "Compare Utterances by one parameter...".
+If you select multiple  **Sound objects**, **TextGrids** and data **Tables**, you will also have the option to "Compare Utterances by one parameter...".
 
 ![image](https://user-images.githubusercontent.com/46627448/153032854-f77e1613-5fac-4a0b-bc2e-2a77a92855ea.png)
 
