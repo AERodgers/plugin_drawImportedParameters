@@ -435,16 +435,19 @@ procedure drawParamLine: .sound, .table,
     Draw: .start, .end, .min_y, .max_y, "no"
 
     if .vs_var_count = 1
+        .y_formatted$ = replace_regex$ (.y_axis$, "[#^%_]", "\\& ", 0)
         @markYAxisDynamically:
             ... .table, .y_axis$, 0.1, 5, "left", .y_from_zero
-        Text left: "yes", .y_axis$
+        Text left: "yes", .y_formatted$
     elsif .vs_var_count = 2
+        .y_formatted$ = replace_regex$ (.y_axis$, "[#^%_]", "\\& ", 0)
         @markYAxisDynamically:
             ... .table, .y_axis$, 0.1, 5, "right", .y_from_zero
-        Text right: "yes", .y_axis$
+        Text right: "yes", .y_formatted$
     endif
 
-    @legend: "L", .colour$, .y_axis$, 3
+    .y_formatted$ = replace_regex$ (.y_axis$, "[#^%_]", "\\& ", 0)
+    @legend: "L", .colour$, .y_formatted$, 3
 
     removeObject: .new_VS
 endproc

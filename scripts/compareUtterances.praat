@@ -55,6 +55,7 @@ procedure main
         endfor
     endif
 
+    # run main UI
     convert_frame_to_s# = zero#(num_grids)
     okay = 0
     while not okay
@@ -81,10 +82,18 @@ procedure main
         endif
     endfor
 
+
     @warpTimes: textGrids#, tables#,
                       ... reference_tier, time_axis$, ref_grid_obj
 
     @drawUtteranceComparison
+
+    if unformatted_names
+        grid_names$ = replace$ (grid_names$, "\# ", "#", 0)
+        grid_names$ = replace$ (grid_names$, "\^ ", "^", 0)
+        grid_names$ = replace$ (grid_names$, "\% ", "%", 0)
+        grid_names$ = replace$ (grid_names$, "\_ ", "_", 0)
+    endif
 
     ## Save variables.
     @writeVariables: "variables/compareUtterances.vars"
@@ -123,6 +132,7 @@ procedure mainUI
                     option: textGrids$#[.i]
                 endfor
             sentence: "Utterance names for image", grid_names$
+            boolean: "Unformatted names", unformatted_names
 
             comment: "Pitch Information"
             natural: "Pitch floor", pitch_floor
@@ -161,8 +171,11 @@ procedure mainUI
         y_from_zero = 0
         vs_vars$[1] = y_parameter$
         vs_vars_n = 1
+        if unformatted_names
+            utterance_names_for_image$ =
+            ... replace_regex$ (utterance_names_for_image$, "[#^%_]", "\\& ", 0)
+        endif
         grid_names$  = utterance_names_for_image$
-
         @csvLine2Array: utterance_names_for_image$,
         ... "grid_names_n",
         ... "grid_names$"
@@ -220,6 +233,14 @@ procedure validateUserInput
         warnings += 1
         warning$[warnings] =
         ... "The number of TextGrids and TextGrid names don't match."
+        warnings += 1
+        warning$[warnings] =
+        ... "Using base names of textgrid objects."
+        grid_names$ = textGrids$#[1]
+        for .i from 2 to num_grids
+            grid_names$ = grid_names$ + ", " + textGrids$#[.i]
+        endfor
+
     endif
 
     for .i to num_grids
