@@ -954,7 +954,7 @@ procedure warpTime2Ref: .tables#, .t_col$,
             ... + "endif "
 
             # check for and correct undefined times in standardized time column.
-            .undefined# = List row numbers where: "self [row, .t_col$] = undefined"
+            .undefined# = List row numbers where: "self [row, .std_col$] = undefined"
             for .k to size(.undefined#)
                 .cur_t = Get value: .undefined#[.k], .t_col$
                 Set numeric value: .undefined#[.k], .std_col$,

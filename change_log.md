@@ -1,5 +1,8 @@
 # plugin_drawImportedParameters Change Log
 
+## 1.2.3
+* Fixed bug which failed to catch all undefined time values in CompareUtterances time warping.
+
 ## 1.2.2
 * Improvements to compareUtterances:
     * User has the option to use formatted/unformatted versions of y-axis names.

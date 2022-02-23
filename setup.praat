@@ -1,4 +1,4 @@
-# plugin_drawImportedParameters v.1.2.1
+# plugin_drawImportedParameters v.1.2.3
 
 Add action command:
 ... "Sound", 0,
